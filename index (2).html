@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>わくわくしこく</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #f8f8f8;
+      --surface2: #f0f0f0;
+      --border: #e0e0e0;
+      --accent: #2563eb;
+      --danger: #ef4444;
+      --text: #111111;
+      --text-sub: #555555;
+      --text-muted: #999999;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 48px;
+    }
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: 0.03em; }
+    .tabs {
+      display: flex;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      flex: 1;
+      padding: 12px 8px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2.5px solid transparent;
+      transition: all 0.18s;
+      user-select: none;
+    }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .page { display: none; padding: 16px; }
+    .page.active { display: block; }
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin: 20px 0 10px;
+    }
+    .section-title:first-child { margin-top: 0; }
+    .car-setting-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+    .car-setting-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .car-setting-label {
+      font-size: 12px;
+      color: var(--text-sub);
+      font-weight: 600;
+      width: 52px;
+      flex-shrink: 0;
+    }
+    .car-name-input {
+      flex: 1;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 700;
+      padding: 8px 10px;
+      font-family: inherit;
+      transition: border-color 0.18s;
+    }
+    .car-name-input:focus { outline: none; border-color: var(--accent); }
+    .gou-suffix { font-size: 15px; font-weight: 700; color: var(--text-sub); flex-shrink: 0; }
+    .color-row { display: flex; align-items: center; gap: 10px; }
+    .color-swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+    .swatch {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 2.5px solid transparent;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+    }
+    .swatch:active { transform: scale(0.9); }
+    .swatch.selected { border-color: #333 !important; transform: scale(1.15); }
+    .person-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow);
+    }
+    .avatar-wrap { position: relative; flex-shrink: 0; }
+    .avatar {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      overflow: hidden;
+      border: 2px solid var(--border);
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-hint { font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 2px; }
+    .driver-badge {
+      position: absolute; bottom: -2px; right: -2px;
+      background: var(--accent); color: #fff;
+      font-size: 9px; font-weight: 800;
+      padding: 1px 5px; border-radius: 20px;
+    }
+    .person-info { flex: 1; min-width: 0; }
+    .person-role { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+    .name-input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 600;
+      padding: 8px 10px;
+      width: 100%;
+      font-family: inherit;
+    }
+    .name-input:focus { outline: none; border-color: var(--accent); }
+    .shuffle-hero { text-align: center; padding: 28px 0 16px; }
+    .shuffle-hero p { color: var(--text-sub); font-size: 14px; margin-bottom: 24px; line-height: 1.7; }
+    .shuffle-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--accent); color: #fff;
+      font-size: 16px; font-weight: 800;
+      padding: 15px 36px;
+      border-radius: 50px; border: none; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(37,99,235,0.3);
+      font-family: inherit;
+    }
+    .shuffle-btn:active { transform: scale(0.96); }
+    .warning {
+      background: #fff5f5;
+      border: 1px solid #fca5a5;
+      border-radius: var(--radius-sm);
+      color: var(--danger);
+      font-size: 13px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      display: none;
+    }
+    #result { display: none; margin-top: 4px; }
+    .result-title { text-align: center; font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 12px; }
+    .car-diagram {
+      border-radius: var(--radius);
+      padding: 10px 12px 12px;
+      margin-bottom: 10px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .car-label { text-align: center; font-size: 13px; font-weight: 800; margin-bottom: 8px; letter-spacing: 0.06em; }
+    .car-body { margin: 0 auto; width: 220px; }
+    .road-arrow { text-align: center; font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+    .car-outline { border-radius: 24px 24px 18px 18px; padding: 10px 8px 12px; border: 1.5px solid; }
+    .windshield { height: 5px; border-radius: 3px; margin: 0 14px 10px; opacity: 0.4; }
+    .seat-row { display: flex; justify-content: space-around; align-items: center; }
+    .seat-row.back-row { margin-top: 6px; }
+    .center-divide { width: 22px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .divide-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border); }
+    .steering { font-size: 16px; opacity: 0.4; }
+    .seat-slot { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 72px; }
+    .seat-icon {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+    .seat-icon img { width: 100%; height: 100%; object-fit: cover; }
+    .seat-name { font-size: 11px; font-weight: 700; color: var(--text); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 68px; }
+    .seat-label { font-size: 9px; color: var(--text-muted); }
+    .rear-glass { height: 4px; border-radius: 3px; margin: 8px 14px 0; opacity: 0.3; }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.6); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .seat-icon.animated { animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both; }
+    input[type="file"] { display: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <span>🚗</span>
+  <h1>わくわくしこく</h1>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('settings')">👤 メンバー設定</div>
+  <div class="tab" onclick="switchTab('shuffle')">🎲 席シャッフル</div>
+</div>
+
+<div id="page-settings" class="page active">
+  <div class="section-title">🚙 車の設定</div>
+  <div class="car-setting-card">
+    <div class="car-setting-row">
+      <span class="car-setting-label">車A名前</span>
+      <input class="car-name-input" id="car-a-name" type="text" maxlength="6" placeholder="一" oninput="updateCarSetting()" />
+      <span class="gou-suffix">号</span>
+    </div>
+    <div class="color-row">
+      <span class="car-setting-label">車Aの色</span>
+      <div class="color-swatches" id="swatches-a"></div>
+    </div>
+  </div>
+  <div class="car-setting-card">
+    <div class="car-setting-row">
+      <span class="car-setting-label">車B名前</span>
+      <input class="car-name-input" id="car-b-name" type="text" maxlength="6" placeholder="二" oninput="updateCarSetting()" />
+      <span class="gou-suffix">号</span>
+    </div>
+    <div class="color-row">
+      <span class="car-setting-label">車Bの色</span>
+      <div class="color-swatches" id="swatches-b"></div>
+    </div>
+  </div>
+
+  <div class="section-title">🧑‍✈️ ドライバー</div>
+  <div id="card-0"></div>
+  <div id="card-1"></div>
+  <div class="section-title">👥 同乗者（6名）</div>
+  <div id="card-2"></div>
+  <div id="card-3"></div>
+  <div id="card-4"></div>
+  <div id="card-5"></div>
+  <div id="card-6"></div>
+  <div id="card-7"></div>
+</div>
+
+<div id="page-shuffle" class="page">
+  <div class="shuffle-hero">
+    <p>ボタンを押すと、6人の同乗者をランダムに<br>2台の車に振り分けます。</p>
+    <button class="shuffle-btn" onclick="doShuffle()">
+      <span>🎲</span> シャッフル！
+    </button>
+  </div>
+  <div class="warning" id="warning">⚠️ 名前が入力されていないメンバーがいます。</div>
+  <div id="result">
+    <div class="result-title">🎉 席が決まりました！</div>
+    <div class="car-diagram" id="diagram-a">
+      <div class="car-label" id="label-a">🚙 一号</div>
+      <div class="car-body">
+        <div class="road-arrow">▲ 進行方向</div>
+        <div class="car-outline" id="outline-a">
+          <div class="windshield" id="ws-a"></div>
+          <div class="seat-row">
+            <div class="seat-slot" id="a-driver"><div class="seat-icon"><span>👤</span></div><div class="seat-name">—</div><div class="seat-label">運転</div></div>
+            <div class="center-divide"><div class="steering">🕹️</div></div>
+            <div class="seat-slot" id="a-front"><div class="seat-icon"><span>👤</span></div><div class="seat-name">—</div><div class="seat-label">助手席</div></div>
+          </div>
+          <div class="seat-row back-row">
+            <div class="seat-slot" id="a-back-l"><div class="seat-icon"><span>👤</span></div><div class="seat-name">—</div><div class="seat-label">後部左</div></div>
+            <div class="center-divide"><div class="divide-dot"></div><div class="divide-dot"></div><div class="divide-dot"></div></div>
+            <div class="seat-slot" id="a-back-r"><div class="seat-icon"><span>👤</span></div><div class="seat-name">—</div><div class="seat-label">後部右</div></div>
+          </div>
+          <div class="rear-glass" id="rg-a"></div>
+        </div>
+      </div>
+    </div>
+    <div class="car-diagram" id="diagram-b">
+      <div class="car-label" id="label-b">🚙 二号</div>
+      <div class="car-body">
+        <div class="road-arrow">▲ 進行方向</div>
+        <div class="car-outline" id="outline-b">
+          <div class="windshield" id="ws-b"></div>
+          <div class="seat-row">
+            <div class="seat-slot" id="b-driver"><div class="seat-icon"><span>👤</span></div><div class="seat-name">—</div><div class="seat-label">運転</div></div>
+            <div class="center-divide"><div class="steering">🕹️</div></div>
+            <div class="seat-slot" id="b-front"><div class="seat-icon"><span>👤</span></div><div class="seat-name">—</div><div class="seat-label">助手席</div></div>
+          </div>
+          <div class="seat-row back-row">
+            <div class="seat-slot" id="b-back-l"><div class="seat-icon"><span>👤</span></div><div class="seat-name">—</div><div class="seat-label">後部左</div></div>
+            <div class="center-divide"><div class="divide-dot"></div><div class="divide-dot"></div><div class="divide-dot"></div></div>
+            <div class="seat-slot" id="b-back-r"><div class="seat-icon"><span>👤</span></div><div class="seat-name">—</div><div class="seat-label">後部右</div></div>
+          </div>
+          <div class="rear-glass" id="rg-b"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="file-input" accept="image/*">
+
+<script>
+const CAR_COLORS = [
+  "#ef4444","#f97316","#eab308","#22c55e","#3b82f6",
+  "#8b5cf6","#ec4899","#6b7280","#1f2937","#ffffff"
+];
+
+const DEFAULT_STATE = {
+  cars: [{ name: "一", color: "#3b82f6" }, { name: "二", color: "#ef4444" }],
+  members: [
+    { name: "ドライバーA", emoji: "🧑‍✈️", img: null },
+    { name: "ドライバーB", emoji: "🧑‍✈️", img: null },
+    { name: "メンバー1", emoji: "😀", img: null },
+    { name: "メンバー2", emoji: "😄", img: null },
+    { name: "メンバー3", emoji: "😎", img: null },
+    { name: "メンバー4", emoji: "🥳", img: null },
+    { name: "メンバー5", emoji: "😊", img: null },
+    { name: "メンバー6", emoji: "🤩", img: null },
+  ],
+  lastResult: null,
+};
+
+let state = loadState();
+let currentUploadIndex = null;
+
+function loadState() {
+  try {
+    const s = localStorage.getItem("wws-state");
+    if (s) return JSON.parse(s);
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_STATE));
+}
+
+function saveState() {
+  try {
+    const toSave = {
+      cars: state.cars,
+      members: state.members.map(m => ({ name: m.name, emoji: m.emoji, img: null })),
+      lastResult: state.lastResult,
+    };
+    localStorage.setItem("wws-state", JSON.stringify(toSave));
+  } catch(e) {}
+}
+
+function loadImages() {
+  state.members.forEach((m, i) => {
+    try {
+      const img = localStorage.getItem("wws-img-" + i);
+      if (img) m.img = img;
+    } catch(e) {}
+  });
+}
+
+function renderSwatches(ab, carIdx) {
+  const container = document.getElementById("swatches-" + ab);
+  const selected = state.cars[carIdx].color;
+  container.innerHTML = CAR_COLORS.map(hex => `
+    <div class="swatch${hex === selected ? ' selected' : ''}"
+      style="background:${hex};border-color:${hex==='#ffffff'?'#ccc':'transparent'}"
+      onclick="selectColor(${carIdx},'${hex}','${ab}')"></div>
+  `).join("");
+}
+
+function selectColor(carIdx, hex, ab) {
+  state.cars[carIdx].color = hex;
+  renderSwatches(ab, carIdx);
+  applyCarColors();
+  saveState();
+}
+
+function applyCarColors() {
+  const cA = state.cars[0].color, cB = state.cars[1].color;
+  const nA = (state.cars[0].name || "一") + "号";
+  const nB = (state.cars[1].name || "二") + "号";
+  const la = document.getElementById("label-a");
+  const lb = document.getElementById("label-b");
+  if (la) { la.textContent = "🚙 " + nA; la.style.color = cA; }
+  if (lb) { lb.textContent = "🚙 " + nB; lb.style.color = cB; }
+  applyDiagramColor("a", cA);
+  applyDiagramColor("b", cB);
+}
+
+function applyDiagramColor(ab, hex) {
+  const outline = document.getElementById("outline-" + ab);
+  const ws = document.getElementById("ws-" + ab);
+  const rg = document.getElementById("rg-" + ab);
+  const diag = document.getElementById("diagram-" + ab);
+  if (!outline) return;
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  outline.style.borderColor = hex;
+  outline.style.background = `linear-gradient(180deg,rgba(${r},${g},${b},0.08),rgba(${r},${g},${b},0.02))`;
+  ws.style.background = `rgba(${r},${g},${b},0.5)`;
+  rg.style.background = `rgba(${r},${g},${b},0.4)`;
+  diag.style.borderTopColor = hex;
+  diag.style.borderTopWidth = "3px";
+  document.querySelectorAll(`#diagram-${ab} .seat-icon`).forEach(el => {
+    el.style.borderColor = `rgba(${r},${g},${b},0.45)`;
+  });
+}
+
+function updateCarSetting() {
+  state.cars[0].name = document.getElementById("car-a-name").value || "一";
+  state.cars[1].name = document.getElementById("car-b-name").value || "二";
+  applyCarColors();
+  saveState();
+}
+
+function renderCards() {
+  const roles = ["車A ドライバー（固定）","車B ドライバー（固定）","同乗者","同乗者","同乗者","同乗者","同乗者","同乗者"];
+  state.members.forEach((m, i) => {
+    const el = document.getElementById("card-" + i);
+    if (!el) return;
+    const isDriver = i < 2;
+    const imgHtml = m.img ? `<img src="${m.img}" alt="${m.name}">` : `<span>${m.emoji}</span>`;
+    el.innerHTML = `
+      <div class="person-card">
+        <div>
+          <div class="avatar-wrap">
+            <div class="avatar" onclick="openUpload(${i})">${imgHtml}</div>
+            ${isDriver ? '<div class="driver-badge">運転</div>' : ''}
+          </div>
+          <div class="avatar-hint">タップ変更</div>
+        </div>
+        <div class="person-info">
+          <div class="person-role">${roles[i]}</div>
+          <input class="name-input" type="text" value="${m.name}" placeholder="名前を入力"
+            oninput="updateName(${i},this.value)" maxlength="10" />
+        </div>
+      </div>`;
+  });
+}
+
+function updateName(i, v) { state.members[i].name = v; saveState(); }
+
+function openUpload(i) {
+  currentUploadIndex = i;
+  const fi = document.getElementById("file-input");
+  fi.value = ""; fi.click();
+}
+document.getElementById("file-input").addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  if (!file || currentUploadIndex === null) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    state.members[currentUploadIndex].img = ev.target.result;
+    try { localStorage.setItem("wws-img-" + currentUploadIndex, ev.target.result); } catch(err) {}
+    renderCards();
+  };
+  reader.readAsDataURL(file);
+});
+
+function switchTab(tab) {
+  document.querySelectorAll(".tab").forEach((el, i) => {
+    el.classList.toggle("active", (i===0&&tab==="settings")||(i===1&&tab==="shuffle"));
+  });
+  document.getElementById("page-settings").classList.toggle("active", tab==="settings");
+  document.getElementById("page-shuffle").classList.toggle("active", tab==="shuffle");
+}
+
+function doShuffle() {
+  const allNamed = state.members.every(m => m.name.trim() !== "");
+  const warning = document.getElementById("warning");
+  if (!allNamed) { warning.style.display = "block"; return; }
+  warning.style.display = "none";
+  const passengers = [2,3,4,5,6,7];
+  for (let i = passengers.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [passengers[i],passengers[j]] = [passengers[j],passengers[i]];
+  }
+  state.lastResult = { passengers };
+  saveState();
+  renderResult({ passengers });
+}
+
+function renderResult({ passengers }) {
+  const slots = ["a-front","b-back-l","b-back-r","a-back-l","a-back-r","b-front"];
+  renderSeat("a-driver", state.members[0]);
+  renderSeat("b-driver", state.members[1]);
+  slots.forEach((id, i) => renderSeat(id, state.members[passengers[i]]));
+  applyCarColors();
+  document.getElementById("result").style.display = "block";
+  document.getElementById("result").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function renderSeat(slotId, member) {
+  const slot = document.getElementById(slotId);
+  if (!slot) return;
+  const iconEl = slot.querySelector(".seat-icon");
+  const nameEl = slot.querySelector(".seat-name");
+  iconEl.classList.remove("animated");
+  void iconEl.offsetWidth;
+  iconEl.classList.add("animated");
+  iconEl.innerHTML = member.img ? `<img src="${member.img}">` : `<span>${member.emoji}</span>`;
+  nameEl.textContent = member.name || "—";
+}
+
+// INIT
+loadImages();
+document.getElementById("car-a-name").value = state.cars[0].name;
+document.getElementById("car-b-name").value = state.cars[1].name;
+renderSwatches("a", 0);
+renderSwatches("b", 1);
+renderCards();
+applyCarColors();
+if (state.lastResult) renderResult(state.lastResult);
+</script>
+</body>
+</html>
